@@ -66,7 +66,6 @@
     [ "esp:GND.1", "servo1:GND", "black", [ "h-19.05", "v57.6" ] ],
     [ "esp:13", "servo1:PWM", "green", [ "h-38.25", "v28.8" ] ],
     [ "dht1:SDA", "esp:12", "green", [ "h9.6", "v19.1" ] ],
-    [ "esp:27", "ldr1:AO", "green", [ "h-9.45", "v-134.4", "h-48" ] ],
     [ "led1:A", "r1:2", "green", [ "h0" ] ],
     [ "esp:23", "r1:1", "green", [ "h28.8" ] ],
     [ "esp:GND.2", "led1:C", "black", [ "v0" ] ],
@@ -84,7 +83,8 @@
       "black",
       [ "h-19.05", "v86.4", "h220.8", "v-67.2", "h-19.2", "v-0.08" ]
     ],
-    [ "esp:32", "gas1:AOUT", "green", [ "h-38.25", "v-48" ] ]
+    [ "esp:32", "gas1:AOUT", "green", [ "h-38.25", "v-48" ] ],
+    [ "esp:33", "ldr1:AO", "green", [ "h-9.45", "v-105.6", "h-48" ] ]
   ],
   "dependencies": {}
 }
