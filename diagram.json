@@ -27,7 +27,31 @@
       "top": -54.4,
       "left": -210.4,
       "attrs": {}
-    }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led1",
+      "top": 8.4,
+      "left": 208.2,
+      "rotate": 90,
+      "attrs": { "color": "purple" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 32.75,
+      "left": 134.4,
+      "attrs": { "value": "1000" }
+    },
+    {
+      "type": "wokwi-stepper-motor",
+      "id": "stepper1",
+      "top": 50.53,
+      "left": 237.69,
+      "rotate": 90,
+      "attrs": { "size": "17" }
+    },
+    { "type": "wokwi-a4988", "id": "drv1", "top": 100.8, "left": 148.8, "attrs": {} }
   ],
   "connections": [
     [ "esp:TX", "$serialMonitor:RX", "", [] ],
@@ -42,8 +66,25 @@
     [ "esp:GND.1", "servo1:GND", "black", [ "h-19.05", "v57.6" ] ],
     [ "esp:13", "servo1:PWM", "green", [ "h-38.25", "v28.8" ] ],
     [ "dht1:SDA", "esp:12", "green", [ "h9.6", "v19.1" ] ],
-    [ "esp:14", "gas1:AOUT", "green", [ "h-38.25", "v-96" ] ],
-    [ "esp:27", "ldr1:AO", "green", [ "h-9.45", "v-134.4", "h-48" ] ]
+    [ "esp:27", "ldr1:AO", "green", [ "h-9.45", "v-134.4", "h-48" ] ],
+    [ "led1:A", "r1:2", "green", [ "h0" ] ],
+    [ "esp:23", "r1:1", "green", [ "h28.8" ] ],
+    [ "esp:GND.2", "led1:C", "black", [ "v0" ] ],
+    [ "drv1:2B", "stepper1:A-", "green", [ "v0" ] ],
+    [ "stepper1:A+", "drv1:2A", "green", [ "v9.6", "v28.95" ] ],
+    [ "drv1:1A", "stepper1:B+", "green", [ "h19.35", "v0.08", "h-19.27" ] ],
+    [ "drv1:1B", "stepper1:B-", "green", [ "v0.08", "h67.35" ] ],
+    [ "esp:5V", "drv1:VDD", "red", [ "h0.15", "v28.8", "h192", "v-67.28" ] ],
+    [ "drv1:SLEEP", "drv1:RESET", "green", [ "v0" ] ],
+    [ "drv1:STEP", "esp:2", "green", [ "h0" ] ],
+    [ "esp:15", "drv1:DIR", "green", [ "v0" ] ],
+    [
+      "esp:GND.1",
+      "drv1:GND.1",
+      "black",
+      [ "h-19.05", "v86.4", "h220.8", "v-67.2", "h-19.2", "v-0.08" ]
+    ],
+    [ "esp:32", "gas1:AOUT", "green", [ "h-38.25", "v-48" ] ]
   ],
   "dependencies": {}
 }

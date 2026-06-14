@@ -5,9 +5,14 @@
 #include <ESP32Servo.h>
 #include "DHTesp.h"
 
-const int servoPin = 13;
-const int DHT_PIN = 12;
-const int PINO_LDR = 27;
+const int PIN_SERVO = 13;
+const int PIN_DHT = 12;
+const int PIN_LDR = 27;
+const int PIN_LED = 23;
+bool LED_State = false;
+const int PIN_DIR_MOTOR = 15;
+const int PIN_STEP_MOTOR = 2;
+const int stepsPerRevolution = 200;
 
 const float GAMMA = 0.7;
 const float RL10 = 50;
@@ -24,8 +29,11 @@ PubSubClient client(espClient);
 
 void setup() {
   Serial.begin(115200);
-  servo.attach(servoPin, 500, 2400);
-  dhtSensor.setup(DHT_PIN, DHTesp::DHT22);
+  servo.attach(PIN_SERVO, 500, 2400);
+  dhtSensor.setup(PIN_DHT, DHTesp::DHT22);
+  pinMode(PIN_LED, OUTPUT);
+  pinMode(PIN_DIR_MOTOR, OUTPUT);
+  pinMode(PIN_STEP_MOTOR, OUTPUT);
 
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
@@ -43,7 +51,7 @@ void ler_temp_humidade(){
 }
 
 void ler_luminosidade(){
-    int ldr = analogRead(PINO_LDR);
+    int ldr = analogRead(PIN_LDR);
     float brilho;
 
     ldr = map(ldr, 4095, 0, 1024, 0);
@@ -63,10 +71,19 @@ void ler_luminosidade(){
 }
 
 void ler_gas(){
-
+  int gasvalue = analogRead(32);
+  
+  int porcentagemGas = map(gasvalue, 843, 4041, 0, 100);
+  
+  Serial.print("Leitura Bruta: ");
+  Serial.print(gasvalue);
+  
+  Serial.print("  |  Nivel de Gas: ");
+  Serial.print(porcentagemGas);
+  Serial.println("%");
 }
 
-void ler_bomba_agua(){
+void ler_nivel_agua(){
 
 }
 
@@ -89,11 +106,22 @@ void acionar_ventilador(){
 }
 
 void acionar_lampada(){
-
+  LED_State = !LED_State;
+  digitalWrite(PIN_LED, LED_State);
+  Serial.print("Estou aqui");
 }
 
 void acionar_bomba_agua(){
+  digitalWrite(PIN_DIR_MOTOR, LOW);
 
+  for(int x= 0; x < stepsPerRevolution; x++)
+  {
+    digitalWrite(PIN_STEP_MOTOR, HIGH);
+    delayMicroseconds(2000);
+    digitalWrite(PIN_STEP_MOTOR, LOW);
+    delayMicroseconds(2000);
+  } 
+  delay(100);
 }
 
 void reconnect() {
@@ -107,9 +135,12 @@ void publicar(){
 }
 
 void loop() {
+  /**
   if (!client.connected()) {
     reconnect();
-  }
-  
+  } 
+  */
+
+  ler_gas();
   delay(4000); 
 }
