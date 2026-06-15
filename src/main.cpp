@@ -41,7 +41,7 @@ const float TAXA_ENCHIMENTO = 4.0;
 // Configurações de Rede e MQTT
 const char* ssid = "Wokwi-GUEST";
 const char* password = "";
-const char* mqtt_server = "192.168.0.76";
+const char* mqtt_server = "172.20.10.2";
 
 // Variável para controlar a simulação de água a cada 1 segundo,
 unsigned long tempoAnteriorAgua = 0;
@@ -75,6 +75,7 @@ void reconnect();
 void publicar_dados(float temp, float hum, float lux, int gas, float agua);
 void controlar_automacao(float temp, float agua, float lux, int gas);
 void verificar_temporizadores_remotos();
+void callback(char* topic, byte* payload, unsigned int length);
 
 void setup() {
   Serial.begin(115200);
@@ -94,6 +95,7 @@ void setup() {
   Serial.println("WiFi Conectado!");
 
   client.setServer(mqtt_server, 1883);
+  client.setCallback(callback);
 }
 
 float ler_temp() {
@@ -189,22 +191,22 @@ void callback(char* topic, byte* payload, unsigned int length) {
   Serial.printf("\n[MQTT] Comando recebido no tópico [%s]: %s\n", topic, msg.c_str());
 
   // Comando para a Bomba
-  if (strTopic == "comando/estufa1/bomba" && msg == "LIGAR") {
+  if (strTopic == "comando/estufa2/bomba" && msg == "1") {
     Serial.println("-> Acionamento Remoto: Ligando Bomba por 10s...");
     bombaEmModoRemoto = true;
     tempoComandoRemotoBomba = millis();
     acionar_bomba_agua();
   }
   // Comando para o Ventilador
-  else if (strTopic == "comando/estufa1/ventilador" && msg == "LIGAR") {
+  else if (strTopic == "comando/estufa2/ventilador" && msg == "1") {
     Serial.println("-> Acionamento Remoto: Ligando Ventilador por 10s...");
     ventiladorEmModoRemoto = true;
     tempoComandoRemotoVentilador = millis();
     acionar_ventilador();
   }
   // Comando para o LED
-  else if (strTopic == "comando/estufa1/led") {
-    if (msg == "LIGAR") {
+  else if (strTopic == "comando/estufa2/led") {
+    if (msg == "1") {
       Serial.println("-> Acionamento Remoto: Ligando LED por 10s...");
       ledEmModoRemoto = true;
       tempoComandoRemotoLED = millis();
@@ -216,8 +218,14 @@ void callback(char* topic, byte* payload, unsigned int length) {
 void reconnect() {
   while (!client.connected()) {
     Serial.print("Tentando conexão MQTT...");
-    if (client.connect("ESP32-Estufa2")) {
+    if (client.connect("ESP32-Estufa1")) {
       Serial.println("Conectado ao Broker MQTT!");
+
+      client.subscribe("comando/estufa2/bomba");
+      client.subscribe("comando/estufa2/ventilador");
+      client.subscribe("comando/estufa2/led");
+      Serial.println("-> Inscrito nos tópicos de comando com sucesso!");
+
     } else {
       Serial.print("Falhou, rc=");
       Serial.print(client.state());
