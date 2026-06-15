@@ -30,7 +30,7 @@ const char* ssid = "Wokwi-GUEST";
 const char* password = "";
 const char* mqtt_server = "192.168.0.76";
 
-// Variável para controlar a simulação de água a cada 1 segundo
+// Variável para controlar a simulação de água a cada 1 segundo,
 unsigned long tempoAnteriorAgua = 0;
 const long intervaloAgua = 1000;
 
@@ -234,8 +234,8 @@ void controlar_automacao(float temp, float agua, float lux, int gas) {
 
 void loop() {
   // Mantém MQTT ativo
-  //if (!client.connected()) reconnect();
-  //client.loop(); 
+  if (!client.connected()) reconnect();
+  client.loop(); 
 
   // Simulação contínua do nível da água
   atualizar_nivel_agua();
