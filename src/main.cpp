@@ -41,7 +41,7 @@ const float TAXA_ENCHIMENTO = 4.0;
 // Configurações de Rede e MQTT
 const char* ssid = "Wokwi-GUEST";
 const char* password = "";
-const char* mqtt_server = "172.20.10.2";
+const char* mqtt_server = "192.168.0.76";
 
 // Variável para controlar a simulação de água a cada 1 segundo,
 unsigned long tempoAnteriorAgua = 0;
@@ -191,21 +191,21 @@ void callback(char* topic, byte* payload, unsigned int length) {
   Serial.printf("\n[MQTT] Comando recebido no tópico [%s]: %s\n", topic, msg.c_str());
 
   // Comando para a Bomba
-  if (strTopic == "comando/estufa2/bomba" && msg == "1") {
+  if (strTopic == "comando/estufa1/bomba" && msg == "1") {
     Serial.println("-> Acionamento Remoto: Ligando Bomba por 10s...");
     bombaEmModoRemoto = true;
     tempoComandoRemotoBomba = millis();
     acionar_bomba_agua();
   }
   // Comando para o Ventilador
-  else if (strTopic == "comando/estufa2/ventilador" && msg == "1") {
+  else if (strTopic == "comando/estufa1/ventilador" && msg == "1") {
     Serial.println("-> Acionamento Remoto: Ligando Ventilador por 10s...");
     ventiladorEmModoRemoto = true;
     tempoComandoRemotoVentilador = millis();
     acionar_ventilador();
   }
   // Comando para o LED
-  else if (strTopic == "comando/estufa2/led") {
+  else if (strTopic == "comando/estufa1/led") {
     if (msg == "1") {
       Serial.println("-> Acionamento Remoto: Ligando LED por 10s...");
       ledEmModoRemoto = true;
@@ -221,9 +221,9 @@ void reconnect() {
     if (client.connect("ESP32-Estufa1")) {
       Serial.println("Conectado ao Broker MQTT!");
 
-      client.subscribe("comando/estufa2/bomba");
-      client.subscribe("comando/estufa2/ventilador");
-      client.subscribe("comando/estufa2/led");
+      client.subscribe("comando/estufa1/bomba");
+      client.subscribe("comando/estufa1/ventilador");
+      client.subscribe("comando/estufa1/led");
       Serial.println("-> Inscrito nos tópicos de comando com sucesso!");
 
     } else {
@@ -237,16 +237,16 @@ void reconnect() {
 
 void publicar_dados(float temp, float hum, float lux, int gas, float agua){
   if (client.connected()) {
-    client.publish("monitoramento/estufa2/temperatura", String(temp, 2).c_str());
-    client.publish("monitoramento/estufa2/umidade", String(hum, 1).c_str());
-    client.publish("monitoramento/estufa2/luminosidade", String(lux, 1).c_str());
-    client.publish("monitoramento/estufa2/gas", String(gas).c_str());
-    client.publish("monitoramento/estufa2/nivel_agua", String(agua, 1).c_str());
+    client.publish("monitoramento/estufa1/temperatura", String(temp, 2).c_str());
+    client.publish("monitoramento/estufa1/umidade", String(hum, 1).c_str());
+    client.publish("monitoramento/estufa1/luminosidade", String(lux, 1).c_str());
+    client.publish("monitoramento/estufa1/gas", String(gas).c_str());
+    client.publish("monitoramento/estufa1/nivel_agua", String(agua, 1).c_str());
     
     // Publicação do Estado Atual dos Atuadores (1 = Ligado, 0 = Desligado)
-    client.publish("monitoramento/estufa2/estado_bomba", bombaLigada ? "1" : "0");
-    client.publish("monitoramento/estufa2/estado_ventilador", ventiladorLigado ? "1" : "0");
-    client.publish("monitoramento/estufa2/estado_led", LED_State ? "1" : "0");
+    client.publish("monitoramento/estufa1/estado_bomba", bombaLigada ? "1" : "0");
+    client.publish("monitoramento/estufa1/estado_ventilador", ventiladorLigado ? "1" : "0");
+    client.publish("monitoramento/estufa1/estado_led", LED_State ? "1" : "0");
 
     Serial.println("-> Dados publicados no MQTT com sucesso!");
   }
